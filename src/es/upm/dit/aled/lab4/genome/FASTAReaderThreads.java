@@ -146,6 +146,8 @@ public class FASTAReaderThreads {
 			res.addAll(resParcial);
 		}
 		
+		executor.shutdown();
+		
 		return res;
 	}
 

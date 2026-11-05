@@ -46,11 +46,15 @@ public class FASTASearchCallable implements Callable<List<Integer>> {
 	 *         pattern in the segment of content to be searched.
 	 */
 	@Override
-	public List<Integer> call() throws Exception {
+	public List<Integer> call() {
 		List<Integer> positions = new ArrayList<>();
 		for(int i = lo; i<hi;i++) {
-			if(compare(pattern,i)) {
-				positions.add(i);
+			try {
+				if(compare(pattern,i)) {
+					positions.add(i);
+				}
+			} catch (FASTAException e) {
+				break;
 			}
 		}
 		return positions;
