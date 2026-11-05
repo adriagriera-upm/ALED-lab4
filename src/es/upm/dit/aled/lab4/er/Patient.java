@@ -25,7 +25,7 @@ public class Patient extends Thread {
 	private int number;
 	private List<Transfer> protocol;
 	private int indexProtocol;
-	private Area location;
+	private Area location; 
 	private Position2D position;
 	private Color color;
 
@@ -128,18 +128,32 @@ public class Patient extends Thread {
 	/**
 	 * Advances the Patient's protocol. The Patient is moved to the new Area, the
 	 * movement is animated by the GUI and the index is increased by one.
+	 * @throws InterruptedException 
 	 */
-	private void advanceProtocol() {
-		// TODO
+	private void advanceProtocol() throws InterruptedException {
+		
+		
+		//1.EmergencyRoom lleva el punto que representa al paciente hasta su nueva ubicación.
+		EmergencyRoomGUI gui = EmergencyRoomGUI.getInstance();
+		gui.animateTransfer(this, protocol.get(indexProtocol));
+		
+		//2. Cambiar la ubicación actual del paciente a la de la área de destino.
+		System.out.println("El paciente se está moviendo desde el área: " + this.location.getName() + " hasta el área: " + 
+		protocol.get(indexProtocol).getTo().getName());
+		this.location = protocol.get(indexProtocol).getTo();
+		Patient.sleep(this.protocol.get(indexProtocol).getTime());
+		indexProtocol++;
 	}
 
 	/**
 	 * Simulates the treatment of the Patient at its current location. Therefore,
 	 * the Patient must spend at this method the amount of time specified in such
 	 * Area.
+	 * @throws InterruptedException 
 	 */
-	private void attendedAtLocation() {
-		// TODO
+	private void attendedAtLocation() throws InterruptedException { //Simular el tratamiento = que espere 
+		System.out.println("El paciente " + this.number + "está siendo tratado en: " + this.location.getName());
+		Patient.sleep(location.getTime());
 	}
 
 	/**
@@ -149,7 +163,16 @@ public class Patient extends Thread {
 	 */
 	@Override
 	public void run() {
-		// TODO
+		
+		for (Transfer transfer : protocol) {
+			try {
+				attendedAtLocation();
+				advanceProtocol();
+			} catch (InterruptedException e) {
+				return;
+			}
+		}
+		
 	}
 
 }
