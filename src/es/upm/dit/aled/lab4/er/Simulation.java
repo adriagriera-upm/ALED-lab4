@@ -19,7 +19,7 @@ public class Simulation {
 
 	private EmergencyRoom er;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		try {
 			Simulation sim = new Simulation(args[0]);
 			sim.start();
@@ -43,8 +43,9 @@ public class Simulation {
 
 	/**
 	 * Starts all Patients and waits until all of them have been discharged.
+	 * @throws InterruptedException 
 	 */
-	public void start() {
+	public void start() throws InterruptedException {
 		System.out.println("Starting simulation... Admitting " + er.getPatients().size() + " patients.");
 		// Makes a copy of the patients and shuffle them to impose
 		// a random order of arrival

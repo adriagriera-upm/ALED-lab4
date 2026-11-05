@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+
 /**
  * Reads a FASTA file containing genetic information and allows for the search
  * of specific patterns within these data. The information is stored as an array
@@ -113,13 +114,42 @@ public class FASTAReaderThreads {
 	 * @param pattern The pattern to be found.
 	 * @return All the positions of the first character of every occurrence of the
 	 *         pattern in the data.
+	 * @throws Exception 
 	 */
-	public List<Integer> search(byte[] pattern) {
-		// TODO
-		return null;
+	public List<Integer> search(byte[] pattern) throws Exception {
+		int cores = Runtime.getRuntime().availableProcessors();
+		ExecutorService executor = Executors.newFixedThreadPool(cores);
+		List<Future<List<Integer>>> futuros = new ArrayList<>();
+		
+		
+		for(int i = 0; i<cores-1;i++) {
+			
+			int lo = (validBytes/cores)*i;
+			int hi = (validBytes/cores)*(i+1);
+			
+			FASTASearchCallable tarea = new FASTASearchCallable(this,lo,hi,pattern);
+			Future<List<Integer>> futuro = executor.submit(tarea);
+			futuros.add(futuro);
+		}
+		
+		int lo = (validBytes/cores)*(cores-1);
+		int hi = validBytes;
+		FASTASearchCallable lasttarea = new FASTASearchCallable(this,lo,hi,pattern);
+		Future<List<Integer>> futuro = executor.submit(lasttarea);
+		futuros.add(futuro);
+		
+		List<Integer> res = new ArrayList<>();
+		
+		//Pido respuestas
+		for(Future<List<Integer>> future : futuros) {
+			List<Integer> resParcial = future.get();
+			res.addAll(resParcial);
+		}
+		
+		return res;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		long t1 = System.nanoTime();
 		FASTAReaderThreads reader = new FASTAReaderThreads(args[0]);
 		if (args.length == 1)

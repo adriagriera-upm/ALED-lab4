@@ -133,15 +133,17 @@ public class Patient extends Thread {
 	private void advanceProtocol() throws InterruptedException {
 		
 		
-		//1.EmergencyRoom lleva el punto que representa al paciente hasta su nueva ubicación.
+		//1.EmergencyRoomGUI lleva el punto que representa al paciente hasta su nueva ubicación.
 		EmergencyRoomGUI gui = EmergencyRoomGUI.getInstance();
 		gui.animateTransfer(this, protocol.get(indexProtocol));
 		
 		//2. Cambiar la ubicación actual del paciente a la de la área de destino.
-		System.out.println("El paciente se está moviendo desde el área: " + this.location.getName() + " hasta el área: " + 
-		protocol.get(indexProtocol).getTo().getName());
+		System.out.println("El paciente " + this.number + " se está moviendo desde el área " + this.location.getName() 
+		+ " hasta el área " +  protocol.get(indexProtocol).getTo().getName());
+		
 		this.location = protocol.get(indexProtocol).getTo();
 		Patient.sleep(this.protocol.get(indexProtocol).getTime());
+		//3. Avanzar el protocolo hasta el siguiente paso.
 		indexProtocol++;
 	}
 
@@ -152,7 +154,7 @@ public class Patient extends Thread {
 	 * @throws InterruptedException 
 	 */
 	private void attendedAtLocation() throws InterruptedException { //Simular el tratamiento = que espere 
-		System.out.println("El paciente " + this.number + "está siendo tratado en: " + this.location.getName());
+		System.out.println("El paciente " + this.number + " está siendo tratado en: " + this.location.getName());
 		Patient.sleep(location.getTime());
 	}
 
@@ -173,6 +175,7 @@ public class Patient extends Thread {
 			}
 		}
 		
+		EmergencyRoomGUI.getInstance().removePatient(this);
 	}
 
 }

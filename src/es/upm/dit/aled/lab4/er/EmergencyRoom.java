@@ -131,8 +131,11 @@ public class EmergencyRoom {
 	 * Waits until the Patient has finished their protocol.
 	 * 
 	 * @param patient The Patient.
+	 * @throws InterruptedException 
 	 */
-	public void waitForDischarge(Patient patient) {
+	public void waitForDischarge(Patient patient) throws InterruptedException {
+		
+		patient.join();
 		
 	}
 
